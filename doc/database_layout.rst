@@ -106,4 +106,4 @@ implemenation is in
 For lower-level code accessing the database itself see
 `OverlayDB <https://github.com/ethereum/cpp-ethereum/blob/develop/libdevcore/OverlayDB.h>`__
 and
-`MemoryDB <https://github.com/ethereum/cpp-ethereum/blob/develop/libdevcore/MemoryDB.h>`__.
+`StateCacheDB` <https://github.com/ethereum/cpp-ethereum/blob/develop/libdevcore/StateCacheB.h>`__.
