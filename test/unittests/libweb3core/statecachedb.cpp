@@ -17,7 +17,7 @@
 /** @file StateCacheDB.cpp
  * @author Christoph Jentzsch <cj@ethdev.com>
  * @date 2015
- * memDB test functions.
+ * stateCacheDB test functions.
  */
 
 #include <boost/test/unit_test.hpp>
@@ -34,7 +34,7 @@ namespace dev {  namespace test {
 
 } }// Namespace Close
 
-BOOST_FIXTURE_TEST_SUITE(memDB, TestOutputHelperFixture)
+BOOST_FIXTURE_TEST_SUITE(stateCacheDB, TestOutputHelperFixture)
 
 BOOST_AUTO_TEST_CASE(kill)
 {
@@ -133,13 +133,13 @@ BOOST_AUTO_TEST_CASE(purgeMainMem_Refs)
 
 BOOST_AUTO_TEST_CASE(purgeAuxMem)
 {
-    class AuxMemDB : public StateCacheDB
+    class AuxStateCacheDB : public StateCacheDB
     {
     public:
         std::unordered_map<h256, std::pair<bytes, bool>> getAux() { return m_aux;}
     };
 
-    AuxMemDB myDB;
+    AuxStateCacheDB myDB;
     BOOST_CHECK(myDB.get().empty());
     bytes value = fromHex("43");
 
