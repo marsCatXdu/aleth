@@ -25,26 +25,26 @@ namespace dev
 {
 namespace db
 {
-    class MemoryDB : public DatabaseFace
-    {
-    public:
-        std::string lookup(Slice _key) const override;
-        bool exists(Slice _key) const override;
-        void insert(Slice _key, Slice _value) override;
-        void kill(Slice _key) override;
+class MemoryDB : public DatabaseFace
+{
+public:
+    std::string lookup(Slice _key) const override;
+    bool exists(Slice _key) const override;
+    void insert(Slice _key, Slice _value) override;
+    void kill(Slice _key) override;
 
-        std::unique_ptr<WriteBatchFace> createWriteBatch() const override;
-        void commit(std::unique_ptr<WriteBatchFace> _batch) override;
+    std::unique_ptr<WriteBatchFace> createWriteBatch() const override;
+    void commit(std::unique_ptr<WriteBatchFace> _batch) override;
 
-        // A database must implement the `forEach` method that allows the caller
-        // to pass in a function `f`, which will be called with the key and value
-        // of each record in the database. If `f` returns false, the `forEach`
-        // method must return immediately.
-        void forEach(std::function<bool(Slice, Slice)> f) const override;
+    // A database must implement the `forEach` method that allows the caller
+    // to pass in a function `f`, which will be called with the key and value
+    // of each record in the database. If `f` returns false, the `forEach`
+    // method must return immediately.
+    void forEach(std::function<bool(Slice, Slice)> f) const override;
 
-    private:
-            std::unordered_map<std::string, std::string> m_db;
-            mutable std::mutex m_mutex;
-    };
+private:
+        std::unordered_map<std::string, std::string> m_db;
+        mutable std::mutex m_mutex;
+};
 }
 }

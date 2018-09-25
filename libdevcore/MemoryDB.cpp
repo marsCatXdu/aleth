@@ -78,9 +78,9 @@ void MemoryDB::commit(std::unique_ptr<WriteBatchFace> _batch)
     }
     MemoryDBBatch batch = batchPtr->writeBatch();
     std::lock_guard<std::mutex> lock(m_mutex);
-    for (auto it = batch.begin(); it != batch.end(); it++)
+    for (const auto& e : batch)
     {
-        m_db[it->first] = it->second;
+        m_db[e.first] = e.second;
     }
 }
 
@@ -91,9 +91,9 @@ void MemoryDB::commit(std::unique_ptr<WriteBatchFace> _batch)
 void MemoryDB::forEach(std::function<bool(Slice, Slice)> f) const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    for (auto it = m_db.begin(); it != m_db.end(); it++)
+    for (const auto& e : m_db)
     {
-        if (!f(Slice(it->first.c_str()), Slice(it->second.c_str())))
+        if (!f(Slice(e.first.c_str()), Slice(e.second.c_str())))
         {
             return;
         }
