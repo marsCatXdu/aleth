@@ -650,7 +650,8 @@ void overwriteBlockHeaderForTest(mObject const& _blObj, TestBlock& _block, Chain
             ho.count("number") ? toU256(ho["number"]) : header.number(),
             ho.count("gasLimit") ? toU256(ho["gasLimit"]) : header.gasLimit(),
             ho.count("gasUsed") ? toU256(ho["gasUsed"]) : header.gasUsed(),
-            ho.count("timestamp") ? toU256(ho["timestamp"]) : header.timestamp(),
+            ho.count("timestamp") ? max<u256>(toU256(ho["timestamp"]), 0) :
+                                    max<int64_t>(header.timestamp(), 0),
             ho.count("extraData") ? importByteArray(ho["extraData"].get_str()) :
                                     header.extraData());
 
@@ -672,7 +673,7 @@ void overwriteBlockHeaderForTest(mObject const& _blObj, TestBlock& _block, Chain
         if (ho.count("RelTimestamp"))
         {
             BlockHeader parentHeader = importedBlocks.at(importedBlocks.size() - 1).blockHeader();
-            tmp.setTimestamp(toPositiveInt64(ho["RelTimestamp"]) + parentHeader.timestamp());
+            tmp.setTimestamp(toInt64(ho["RelTimestamp"]) + parentHeader.timestamp());
             tmp.setDifficulty(((const Ethash*)sealEngine)->calculateDifficulty(tmp, parentHeader));
         }
 
@@ -787,7 +788,7 @@ void overwriteUncleHeaderForTest(mObject& uncleHeaderObj, TestBlock& uncle, std:
             {
                 BlockHeader parentHeader = importedBlocks.at(number).blockHeader();
                 uncleHeader.setTimestamp(
-                            toPositiveInt64(uncleHeaderObj["RelTimestamp"]) + parentHeader.timestamp());
+                    toInt64(uncleHeaderObj["RelTimestamp"]) + parentHeader.timestamp());
                 uncleHeader.setDifficulty(((const Ethash*)sealEngine)->calculateDifficulty(uncleHeader, parentHeader));
                 uncleHeaderObj.erase("RelTimestamp");
             }
