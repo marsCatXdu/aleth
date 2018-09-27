@@ -79,6 +79,8 @@ public:
     virtual std::chrono::steady_clock::time_point lastReceived() const = 0;
 
     virtual ReputationManager& repMan() = 0;
+
+    virtual void disableCapability(CapDesc const& _capDesc, std::string const& _problem) = 0;
 };
 
 /**
@@ -123,6 +125,12 @@ public:
 
     ReputationManager& repMan() override;
 
+    void disableCapability(CapDesc const& _capDesc, std::string const& _problem) override
+    { 
+        cnetdetails << "DISABLE: Disabling capability '" << _capDesc.first << "'. Reason: " << _problem;
+        m_disabledCapabilities.insert(_capDesc);
+    }
+
 private:
     static RLPStream& prep(RLPStream& _s, PacketType _t, unsigned _args = 0);
 
@@ -149,6 +157,8 @@ private:
     /// @returns true iff the _msg forms a valid message for sending or receiving on the network.
     static bool checkPacket(bytesConstRef _msg);
 
+    bool capabilityEnabled(CapDesc const& _capDesc) const { return m_disabledCapabilities.find(_capDesc) == m_disabledCapabilities.end(); }
+
     Host* m_server;							///< The host that owns us. Never null.
 
     std::unique_ptr<RLPXFrameCoder> m_io;	///< Transport over which packets are sent.
@@ -170,6 +180,8 @@ private:
 
     std::map<CapDesc, std::shared_ptr<PeerCapabilityFace>> m_capabilities;  ///< The peer's
                                                                             ///< capability set.
+
+    std::set<CapDesc> m_disabledCapabilities;
 
     std::string const m_logContext;
 };

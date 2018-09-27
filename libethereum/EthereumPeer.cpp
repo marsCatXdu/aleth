@@ -243,6 +243,7 @@ bool EthereumPeer::interpretCapabilityPacket(unsigned _id, RLP const& _r)
     if (!observer || !hostData)
         return false;
 
+    /*
     m_lastAsk = std::chrono::system_clock::to_time_t(chrono::system_clock::now());
     try
     {
@@ -436,6 +437,6 @@ bool EthereumPeer::interpretCapabilityPacket(unsigned _id, RLP const& _r)
     {
         cnetlog << "Peer causing an exception: " << _e.what() << " " << _r;
     }
-
+*/
     return true;
 }

@@ -118,6 +118,30 @@ struct NodeInfo
     std::string version;
 };
 
+class CapabilityHostFace
+{
+public:
+    virtual ~CapabilityHostFace() = default;
+
+    virtual boost::optional<PeerSessionInfo> peerSessionInfo(NodeID const& _nodeID) const = 0;
+
+    virtual void disableCapability(NodeID const& _nodeID, CapDesc const& _capDesc, std::string const& _problem) = 0;
+        
+    virtual void disconnect(NodeID const& _nodeID, DisconnectReason _reason) = 0;
+
+    virtual void addRating(NodeID const& _nodeID, int _r) = 0;
+
+    virtual RLPStream& prep(NodeID const& _nodeID, CapDesc const& _capDesc, RLPStream& _s, unsigned _id, unsigned _args = 0) = 0;
+
+    virtual void sealAndSend(NodeID const& _nodeID, RLPStream& _s) = 0;
+
+    virtual void addNote(NodeID const& _nodeID, std::string const& _k, std::string const& _v) = 0;
+
+    virtual bool isRude(NodeID const& _nodeID, std::string const& _capability) const = 0;
+
+    virtual void foreachPeer(std::string const& _name, u256 const& _version, std::function<bool(NodeID const& _nodeID)> _f) const = 0;
+};
+
 /**
  * @brief The Host class
  * Capabilities should be registered prior to startNetwork, since m_capabilities is not thread-safe.
@@ -251,6 +275,8 @@ public:
     std::vector<std::pair<std::shared_ptr<SessionFace>, std::shared_ptr<Peer>>> peerSessions(
         std::string const& _name, u256 const& _version) const;
 
+    std::shared_ptr<CapabilityHostFace> capabilityHost() const { return m_capabilityHost; }
+
 protected:
     void onNodeTableEvent(NodeID const& _n, NodeTableEventType const& _e);
 
@@ -360,6 +386,8 @@ private:
     bool m_dropPeers = false;
 
     ReputationManager m_repMan;
+
+    std::shared_ptr<CapabilityHostFace> m_capabilityHost;
 
     Logger m_logger{createLogger(VerbosityDebug, "net")};
 };
