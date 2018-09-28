@@ -38,18 +38,18 @@ private:
 
 void MemoryDBWriteBatch::insert(Slice _key, Slice _value)
 {
-    m_batch[_key.data()] = _value.data();
+    m_batch[_key.toString()] = _value.toString();
 }
 
 void MemoryDBWriteBatch::kill(Slice _key)
 {
-    m_batch.erase(_key.data());
+    m_batch.erase(_key.toString());
 }
 
 std::string MemoryDB::lookup(Slice _key) const
 {
     std::string value;
-    dev::Guard lock(m_mutex);
+    Guard lock(m_mutex);
     auto const& it = m_db.find(_key.toString());
     if (it != m_db.end())
     {
@@ -60,19 +60,19 @@ std::string MemoryDB::lookup(Slice _key) const
 
 bool MemoryDB::exists(Slice _key) const
 {
-    dev::Guard lock(m_mutex);
-    return m_db.count(_key.data()) != 0;
+    Guard lock(m_mutex);
+    return m_db.count(_key.toString()) != 0;
 }
 
 void MemoryDB::insert(Slice _key, Slice _value)
 {
-    dev::Guard lock(m_mutex);
+    Guard lock(m_mutex);
     m_db[_key.toString()] = _value.toString();
 }
 
 void MemoryDB::kill(Slice _key)
 {
-    dev::Guard lock(m_mutex);
+    Guard lock(m_mutex);
     m_db.erase(_key.toString());
 }
 
@@ -95,7 +95,7 @@ void MemoryDB::commit(std::unique_ptr<WriteBatchFace> _batch)
             DatabaseError() << errinfo_comment("Invalid batch type passed to MemoryDB::commit"));
     }
     MemoryDBBatch batch = batchPtr->writeBatch();
-    dev::Guard lock(m_mutex);
+    Guard lock(m_mutex);
     for (auto const& e : batch)
     {
         m_db[e.first] = e.second;
@@ -108,10 +108,10 @@ void MemoryDB::commit(std::unique_ptr<WriteBatchFace> _batch)
 // method must return immediately.
 void MemoryDB::forEach(std::function<bool(Slice, Slice)> _f) const
 {
-    dev::Guard lock(m_mutex);
+    Guard lock(m_mutex);
     for (auto const& e : m_db)
     {
-        if (!_f(Slice(e.first.c_str()), Slice(e.second.c_str())))
+        if (!_f(Slice(e.first), Slice(e.second)))
         {
             return;
         }

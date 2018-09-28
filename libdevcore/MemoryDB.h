@@ -44,7 +44,7 @@ public:
 
 private:
     std::unordered_map<std::string, std::string> m_db;
-    mutable dev::Mutex m_mutex;
+    mutable Mutex m_mutex;
 };
 }  // namespace db
 }  // namespace dev
