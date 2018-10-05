@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <libethcore/Common.h>
 #include <libdevcrypto/Common.h>
 #include <libdevcore/RLP.h>
@@ -53,6 +55,7 @@ public:
 	TransactionBase() {}
 
 	/// Constructs a transaction from a transaction skeleton & optional secret.
+	/// XdAleth marsCatXdu web3的 signTransaction 最终调用的构造器
 	TransactionBase(TransactionSkeleton const& _ts, Secret const& _s = Secret());
 
 	/// Constructs a signed message-call transaction.
@@ -135,6 +138,9 @@ public:
 	/// @returns the transaction-count of the sender.
 	u256 nonce() const { return m_nonce; }
 
+	// marsCatXdu XdAleth 新增字符串字段
+	string extraMsg() const { return m_extraMsg; }
+
 	/// Sets the nonce to the given value. Clears any signature.
 	void setNonce(u256 const& _n) { clearSignature(); m_nonce = _n; }
 
@@ -180,6 +186,9 @@ protected:
 	u256 m_gasPrice;					///< The base fee and thus the implied exchange rate of ETH to GAS.
 	u256 m_gas;							///< The total gas to convert, paid for from sender's account. Any unused gas gets refunded once the contract is ended.
 	bytes m_data;						///< The data associated with the transaction, or the initialiser if it's a creation transaction.
+
+	string m_extraMsg;		// marsCatXdu XdAleth 新增字符串字段
+
 	boost::optional<SignatureStruct> m_vrs;	///< The signature of the transaction. Encodes the sender.
 	int m_chainId = -4;					///< EIP155 value for calculating transaction hash https://github.com/ethereum/EIPs/issues/155
 
@@ -200,7 +209,7 @@ inline std::ostream& operator<<(std::ostream& _out, TransactionBase const& _t)
 		_out << "[CREATE]";
 
 	_out << "/" << _t.data().size() << "$" << _t.value() << "+" << _t.gas() << "@" << _t.gasPrice();
-	_out << "<-" << _t.safeSender().abridged() << " #" << _t.nonce() << "}";
+	_out << "<-" << _t.safeSender().abridged() << " #" << _t.nonce() << t.extraMsg() << "}";
 	return _out;
 }
 

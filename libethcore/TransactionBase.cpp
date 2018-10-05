@@ -30,6 +30,8 @@ using namespace std;
 using namespace dev;
 using namespace dev::eth;
 
+// XdAleth marsCatXdu web3的 signTransaction 调用了这个
+// 该构造器改造中，正在改造 sign(_s)
 TransactionBase::TransactionBase(TransactionSkeleton const& _ts, Secret const& _s):
 	m_type(_ts.creation ? ContractCreation : MessageCall),
 	m_nonce(_ts.nonce),
@@ -38,12 +40,14 @@ TransactionBase::TransactionBase(TransactionSkeleton const& _ts, Secret const& _
 	m_gasPrice(_ts.gasPrice),
 	m_gas(_ts.gas),
 	m_data(_ts.data),
+	m_extraMsg(_ts.extraMsg);
 	m_sender(_ts.from)
 {
 	if (_s)
 		sign(_s);
 }
 
+// XdAleth marsCatXdu 从 RLP 构造交易，接收广播的交易应该也是走的这里
 TransactionBase::TransactionBase(bytesConstRef _rlpData, CheckTransaction _checkSig)
 {
 	RLP const rlp(_rlpData);
@@ -68,6 +72,9 @@ TransactionBase::TransactionBase(bytesConstRef _rlpData, CheckTransaction _check
 		h256 const r = rlp[7].toInt<u256>();
 		h256 const s = rlp[8].toInt<u256>();
 
+		m_extraMsg = rlp[9].toString();		// XdAleth marsCatXdu 还行，RLP自带这个 toString()，吓死我了
+											// 我感觉把 v、r、s 串到后面比较好。。但是要是别的东西也用这玩意就炸了，怂，还是续到后面吧
+
 		if (isZeroSignature(r, s))
 		{
 			m_chainId = v;
@@ -91,7 +98,7 @@ TransactionBase::TransactionBase(bytesConstRef _rlpData, CheckTransaction _check
 		if (_checkSig == CheckTransaction::Everything)
 			m_sender = sender();
 
-		if (rlp.itemCount() > 9)
+		if (rlp.itemCount() > 10)	// XdAleth marsCatXdu 整数从9改为10.直接在这里把数一加就扩展了吧？希望不会炸（然而事情好像并没有这么简单）
 			BOOST_THROW_EXCEPTION(InvalidTransactionFormat() << errinfo_comment("too many fields in the transaction RLP"));
 	}
 	catch (Exception& _e)
@@ -141,43 +148,47 @@ SignatureStruct const& TransactionBase::signature() const
 	return *m_vrs;
 }
 
+// XdAleth marsCatXdu 这玩意感觉不像干了 rlp 的活。。。
 void TransactionBase::sign(Secret const& _priv)
 {
-	auto sig = dev::sign(_priv, sha3(WithoutSignature));
+	auto sig = dev::sign(_priv, sha3(WithoutSignature));		// dev::sign 来自 devcrypto 中的 common
 	SignatureStruct sigStruct = *(SignatureStruct const*)&sig;
 	if (sigStruct.isValid())
 		m_vrs = sigStruct;
 }
 
+// XdAleth marsCatXdu 然而这个看起来就非常像是干了 RLP 的活了，对照一下顺序。。
 void TransactionBase::streamRLP(RLPStream& _s, IncludeSignature _sig, bool _forEip155hash) const
 {
 	if (m_type == NullTransaction)
 		return;
 
-	_s.appendList((_sig || _forEip155hash ? 3 : 0) + 6);
-	_s << m_nonce << m_gasPrice << m_gas;
-	if (m_type == MessageCall)
-		_s << m_receiveAddress;
+	_s.appendList((_sig || _forEip155hash ? 3 : 0) + 6);	// 这个是不是限制 RLP 的尺寸的玩意啊，有签名就9个元素，没有就6个。。不对好像没那么简单不管了真麻烦去你的吧
+	_s << m_nonce << m_gasPrice << m_gas;	// 这玩意排序是。。。 nonce, gasPrice, gas, value, data, ???, ???, ???
+	if (m_type == MessageCall)				// 最后面三个字段，r v s 看起来非常像算密码用的东西，怕不是验签名用的哟
+		_s << m_receiveAddress;				
 	else
-		_s << "";
-	_s << m_value << m_data;
-
+		_s << "";							// 填数据的时候按交易种类不同做了区分，接收时候没有区分接收。所以这里就直接填个空了
+	_s << m_value << m_data;				// 是我的水平太差了吧，看不出来大佬们的一些操作的意义是啥。。。菜哭了。。。。。
+											// 到这里前 6 个元素已经填完了
 	if (_sig)
 	{
 		if (!m_vrs)
-			BOOST_THROW_EXCEPTION(TransactionIsUnsigned());
+			BOOST_THROW_EXCEPTION(TransactionIsUnsigned());		// 哦，所以就是说只有签名了的交易才会序列化吧，没签名的话直接炸
 
-		if (hasZeroSignature())
+		if (hasZeroSignature())									// 这个 hasZeroSignature 和上面的有啥差别。。。不过好像不弄明白也没影响啊
 			_s << m_chainId;
 		else
 		{
 			int const vOffset = m_chainId * 2 + 35;
 			_s << (m_vrs->v + vOffset);
 		}
-		_s << (u256)m_vrs->r << (u256)m_vrs->s;
+		_s << (u256)m_vrs->r << (u256)m_vrs->s;					// 第九个元素填完了
 	}
-	else if (_forEip155hash)
+	else if (_forEip155hash)		// TODO：查一下这个EIP155，怕是有什么深刻的东西在里面
 		_s << m_chainId << 0 << 0;
+	
+	_s<<m_extraMsg;					// 耶！
 }
 
 static const u256 c_secp256k1n("115792089237316195423570985008687907852837564279074904382605163141518161494337");

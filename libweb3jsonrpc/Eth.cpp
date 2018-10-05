@@ -243,17 +243,23 @@ void Eth::setTransactionDefaults(TransactionSkeleton& _t)
 	if (!_t.from)
 		_t.from = m_ethAccounts.defaultTransactAccount();
 }
-
-string Eth::eth_sendTransaction(Json::Value const& _json)
+/**
+ * marsCatXdu Modfied
+ * 这个是从 ts 构造交易并发送的，应该是需要改的都改完了——各种交易构造与值传递相关的东西
+ * 再往后应该就不用改了吧，直接发送了
+ * 希望没有检测体积的东西引起爆炸，这玩意炸了可咋调啊。。。。。
+ * 
+*/
+string Eth::eth_sendTransaction(Json::Value const& _json)		// 这玩意应该算是改完了，这里是直接发送交易的
 {
 	try
 	{
-		TransactionSkeleton t = toTransactionSkeleton(_json);
-		setTransactionDefaults(t);
+		TransactionSkeleton t = toTransactionSkeleton(_json);	// 前后这俩都得改，后面的是解析器，前面的是结构
+		setTransactionDefaults(t);								// 处理 json 中没有 from 字段的情况
 		pair<bool, Secret> ar = m_ethAccounts.authenticate(t);
 		if (!ar.first)
 		{
-			h256 txHash = client()->submitTransaction(t, ar.second);
+			h256 txHash = client()->submitTransaction(t, ar.second);	// 提交构造好的交易
 			return toJS(txHash);
 		}
 		else
@@ -268,18 +274,24 @@ string Eth::eth_sendTransaction(Json::Value const& _json)
 		throw JsonRpcException(exceptionToErrorMessage());
 	}
 }
-
-Json::Value Eth::eth_signTransaction(Json::Value const& _json)
+/**
+ * marsCatXdu Modfied
+ * 我怀疑这玩意自己就具有签名同时序列化的功能
+ * 不过好像签名了必然就成了RLP了这也很自然地说。。。
+ * 
+ * 还没完改呢，头大
+*/
+Json::Value Eth::eth_signTransaction(Json::Value const& _json)	
 {
 	try
 	{
 		TransactionSkeleton ts = toTransactionSkeleton(_json);
 		setTransactionDefaults(ts);
-		ts = client()->populateTransactionWithDefaults(ts);
+		ts = client()->populateTransactionWithDefaults(ts);		// 这上边应该都不用动
 		pair<bool, Secret> ar = m_ethAccounts.authenticate(ts);
-		Transaction t(ts, ar.second);
+		Transaction t(ts, ar.second);							// 最终去调用了一个 TransactionBase 的构造器
 		RLPStream s;
-		t.streamRLP(s);
+		t.streamRLP(s);											// 似乎被猜对了，在这里调用了一个序列化用的函数
 		return toJson(t, s.out());
 	}
 	catch (Exception const&)
@@ -299,7 +311,10 @@ Json::Value Eth::eth_inspectTransaction(std::string const& _rlp)
 		BOOST_THROW_EXCEPTION(JsonRpcException(Errors::ERROR_RPC_INVALID_PARAMS));
 	}
 }
-
+/**
+ * marsCatXdu Modfied
+ * 还没改呢，头大
+*/
 string Eth::eth_sendRawTransaction(std::string const& _rlp)
 {
 	try

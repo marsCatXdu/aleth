@@ -86,7 +86,9 @@ public:
 	virtual Json::Value eth_getUncleCountByBlockHash(std::string const& _blockHash) override;
 	virtual Json::Value eth_getUncleCountByBlockNumber(std::string const& _blockNumber) override;
 	virtual std::string eth_getCode(std::string const& _address, std::string const& _blockNumber) override;
+//---------------------------------------------------<<< TODO: 跟着这个函数去找解析函数
 	virtual std::string eth_sendTransaction(Json::Value const& _json) override;
+//--------------------------------------------------->>>
 	virtual std::string eth_call(Json::Value const& _json, std::string const& _blockNumber) override;
 	virtual std::string eth_estimateGas(Json::Value const& _json) override;
 	virtual bool eth_flush() override;
@@ -115,9 +117,13 @@ public:
 	virtual std::string eth_register(std::string const& _address) override;
 	virtual bool eth_unregister(std::string const& _accountId) override;
 	virtual Json::Value eth_fetchQueuedTransactions(std::string const& _accountId) override;
+//---------------------------------------------------<<<
 	virtual Json::Value eth_signTransaction(Json::Value const& _transaction) override;
+//--------------------------------------------------->>>
 	virtual Json::Value eth_inspectTransaction(std::string const& _rlp) override;
+//---------------------------------------------------<<<
 	virtual std::string eth_sendRawTransaction(std::string const& _rlp) override;
+//--------------------------------------------------->>>
 	virtual bool eth_notePassword(std::string const&) override { return false; }
 	virtual Json::Value eth_syncing() override;
 	virtual std::string eth_chainId() override;

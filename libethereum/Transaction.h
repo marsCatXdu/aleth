@@ -89,6 +89,7 @@ public:
 	Transaction() {}
 
 	/// Constructs from a transaction skeleton & optional secret.
+	/// XdAleth marsCatXdu web3的 signTransaction 调用了这个，这个再顺着去调 base 。。。
 	Transaction(TransactionSkeleton const& _ts, Secret const& _s = Secret()): TransactionBase(_ts, _s) {}
 
 	/// Constructs a signed message-call transaction.

@@ -18,13 +18,19 @@
  * @author Gav Wood <i@gavwood.com>
  * @date 2014
  */
+#include <string>
 
 #include "Interface.h"
+
 using namespace std;
 using namespace dev;
 using namespace eth;
 
-void Interface::submitTransaction(Secret const& _secret, u256 const& _value, Address const& _dest, bytes const& _data, u256 const& _gas, u256 const& _gasPrice, u256 const& _nonce)
+/**
+ * marsCatXdu
+ * XdAleth 添加字段
+*/
+void Interface::submitTransaction(Secret const& _secret, u256 const& _value, Address const& _dest, bytes const& _data, u256 const& _gas, u256 const& _gasPrice, u256 const& _nonce, string const& _extraMsg)
 {
 	TransactionSkeleton ts;
 	ts.creation = false;
@@ -34,6 +40,7 @@ void Interface::submitTransaction(Secret const& _secret, u256 const& _value, Add
 	ts.gas = _gas;
 	ts.gasPrice = _gasPrice;
 	ts.nonce = _nonce;
+	ts.extraMsg = _extraMsg;
 	submitTransaction(ts, _secret);
 }
 

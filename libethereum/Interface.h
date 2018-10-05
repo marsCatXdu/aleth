@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <libdevcore/Common.h>
 #include <libdevcore/CommonIO.h>
 #include <libdevcore/Guards.h>
@@ -79,8 +81,9 @@ public:
 	/// @returns the transaction's hash.
 	virtual h256 submitTransaction(TransactionSkeleton const& _t, Secret const& _secret) = 0;
 
-	/// Submits the given message-call transaction.
-	void submitTransaction(Secret const& _secret, u256 const& _value, Address const& _dest, bytes const& _data = bytes(), u256 const& _gas = 1000000, u256 const& _gasPrice = DefaultGasPrice, u256 const& _nonce = Invalid256);
+	/// Submits the given message-call transaction. 
+	/// XdAleth marsCatXdu 添加extraMsg字段
+	void submitTransaction(Secret const& _secret, u256 const& _value, Address const& _dest, bytes const& _data = bytes(), u256 const& _gas = 1000000, u256 const& _gasPrice = DefaultGasPrice, u256 const& _nonce = Invalid256, string const& _extraMsg);
 
     /// Imports the given transaction into the transaction queue
 	virtual h256 importTransaction(Transaction const& _t) = 0;

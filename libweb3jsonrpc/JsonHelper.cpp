@@ -369,7 +369,9 @@ Json::Value toJsonByBlock(LocalisedLogEntries const& _entries)
 
     return toJson(entriesByBlock, order);
 }
-
+/**
+ * XdAleth marsCatXdu Modfied
+*/
 TransactionSkeleton toTransactionSkeleton(Json::Value const& _json)
 {
     TransactionSkeleton ret;
@@ -400,6 +402,10 @@ TransactionSkeleton toTransactionSkeleton(Json::Value const& _json)
 
     if (!_json["nonce"].empty())
         ret.nonce = jsToU256(_json["nonce"].asString());
+
+    if (!_json["extraMsg"].empty())                     // New field added in XdAleth
+        ret.extraMsg = jsToU256(_json["extraMsg"].asString());
+
     return ret;
 }
 
