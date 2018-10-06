@@ -18,6 +18,9 @@ core/Common::TransactionSkeleton
 TransactionBase 添加extraMsg存储字段，新增输出函数，修改human-readable重载运算符  
 TransactionBase 从 TransactionSkeleton 构造交易的构造器添加字段初始化功能  
 
+（下面忘了一大堆，反正解析之类的也改了） 
+JsonHelper中的解析交易的工具也改了，加了新的字段  
+
 ### 各种瞎猜+结论等
 关于RLP：从 web3.js 的文档来看，应该是在 web3.js 中有一套用于序列化交易的函数。  
 ~~总觉得 aleth 客户端应该也有一套序列化用的函数，可以直接从 ts 转到 rlp，但目前还没有见到。~~  
@@ -47,4 +50,6 @@ $git status
 >	modified:   libweb3jsonrpc/Eth.h  
 >	modified:   libweb3jsonrpc/JsonHelper.cpp  
 
-
+### 2018.10.6  
+【未测试】修改了解析之类的东西，加了一堆注释，从 web3 查交易获取交易 json 的解析也扩展了  
+做了个编译测试，炸了  
