@@ -235,7 +235,14 @@ bool EthereumPeer::isCriticalSyncing() const
 {
     return m_asking == Asking::BlockHeaders || m_asking == Asking::State || (m_asking == Asking::BlockBodies && m_protocolVersion == 62);
 }
-
+/**
+ * marsCatXdu Marked
+ * Capability,应该是正如其名，存储和传输的是真正【有效】的载荷
+ * 
+ * 施工思路：
+ * 沿着数据前进的方向前进，跟着一路改下去……
+ * 
+*/
 bool EthereumPeer::interpretCapabilityPacket(unsigned _id, RLP const& _r)
 {
     auto observer = m_observer.lock();
@@ -264,6 +271,11 @@ bool EthereumPeer::interpretCapabilityPacket(unsigned _id, RLP const& _r)
         observer->onPeerStatus(dynamic_pointer_cast<EthereumPeer>(dynamic_pointer_cast<EthereumPeer>(shared_from_this())));
         break;
     }
+
+/**
+ * marsCatXdu Modified
+ * 这里要改，施工中
+*/
     case TransactionsPacket:
     {
         observer->onPeerTransactions(dynamic_pointer_cast<EthereumPeer>(dynamic_pointer_cast<EthereumPeer>(shared_from_this())), _r);
@@ -305,6 +317,11 @@ bool EthereumPeer::interpretCapabilityPacket(unsigned _id, RLP const& _r)
         }
         break;
     }
+
+/**
+ * marsCatXdu Modified
+ * Block本身*可能*也要改，不确定
+*/
     case GetBlockBodiesPacket:
     {
         unsigned count = static_cast<unsigned>(_r.itemCount());
@@ -325,6 +342,10 @@ bool EthereumPeer::interpretCapabilityPacket(unsigned _id, RLP const& _r)
         sealAndSend(s);
         break;
     }
+/**
+ * marsCatXdu Modified
+ * Block本身*可能*也要改，不确定
+*/
     case BlockBodiesPacket:
     {
         if (m_asking != Asking::BlockBodies)

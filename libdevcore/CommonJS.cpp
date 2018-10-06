@@ -32,7 +32,7 @@ bytes jsToBytes(string const& _s, OnFailed _f)
 {
 	try
 	{
-		return fromHex(_s, WhenError::Throw);
+		return fromHex(_s, WhenError::Throw);		// 这玩意返回一个 bytes，bytes：std::vector<byte>，byte:uint8_t，在stdint里：typedef unsigned char	uint8_t;
 	}
 	catch (...)
 	{

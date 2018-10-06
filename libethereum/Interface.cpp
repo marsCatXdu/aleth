@@ -29,6 +29,8 @@ using namespace eth;
 /**
  * marsCatXdu
  * XdAleth 添加字段
+ * 
+ * 这个 submitTransaction 函数的最后一行调用的应该是 Client::submitTransaction(ts, secret)
 */
 void Interface::submitTransaction(Secret const& _secret, u256 const& _value, Address const& _dest, bytes const& _data, u256 const& _gas, u256 const& _gasPrice, u256 const& _nonce, string const& _extraMsg)
 {

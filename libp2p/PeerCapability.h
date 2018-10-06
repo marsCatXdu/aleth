@@ -55,9 +55,14 @@ public:
     {
         return _packetType >= m_idOffset && _packetType < m_messageCount + m_idOffset;
     }
-
+/**
+ * marsCatXdu Marked
+ * 在这里调用 interpretCapabilityPacket，传入上一级送来的 RLP
+ * 
+*/
     bool interpret(unsigned _packetType, RLP const& _rlp) override
     {
+        std::cout<<"执行 PeerCapability::interpret\n"; // 哎呀不行了干脆土办法解决吧懒得搞
         return interpretCapabilityPacket(_packetType - m_idOffset, _rlp);
     }
 

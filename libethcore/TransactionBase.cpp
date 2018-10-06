@@ -163,7 +163,8 @@ void TransactionBase::streamRLP(RLPStream& _s, IncludeSignature _sig, bool _forE
 	if (m_type == NullTransaction)
 		return;
 
-	_s.appendList((_sig || _forEip155hash ? 3 : 0) + 6);	// 这个是不是限制 RLP 的尺寸的玩意啊，有签名就9个元素，没有就6个。。不对好像没那么简单不管了真麻烦去你的吧
+	_s.appendList((_sig || _forEip155hash ? 3 : 0) + 7);	// 这个是不是限制 RLP 的尺寸的玩意啊，有签名就9个元素，没有就6个。。不对好像没那么简单不管了真麻烦去你的吧
+															// 把上面那行结尾的 6 改成 7 了
 	_s << m_nonce << m_gasPrice << m_gas;	// 这玩意排序是。。。 nonce, gasPrice, gas, value, data, ???, ???, ???
 	if (m_type == MessageCall)				// 最后面三个字段，r v s 看起来非常像算密码用的东西，怕不是验签名用的哟
 		_s << m_receiveAddress;				

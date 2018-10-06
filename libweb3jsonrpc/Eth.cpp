@@ -259,7 +259,9 @@ string Eth::eth_sendTransaction(Json::Value const& _json)		// 这玩意应该算
 		pair<bool, Secret> ar = m_ethAccounts.authenticate(t);
 		if (!ar.first)
 		{
-			h256 txHash = client()->submitTransaction(t, ar.second);	// 提交构造好的交易
+			h256 txHash = client()->submitTransaction(t, ar.second);	// 提交构造好的交易。。。话说这个 client() 指的咋看也不是 interface 啊
+																		// 是指向 Client 的吧，难不成 Interface 反向派生了？
+			std::cout<<"=== Eth.cpp at client()->submitTransaction() ===\n";	// 直接这么打个标得了……
 			return toJS(txHash);
 		}
 		else
@@ -279,7 +281,7 @@ string Eth::eth_sendTransaction(Json::Value const& _json)		// 这玩意应该算
  * 我怀疑这玩意自己就具有签名同时序列化的功能
  * 不过好像签名了必然就成了RLP了这也很自然地说。。。
  * 
- * 还没完改呢，头大
+ * 应该是改完了
 */
 Json::Value Eth::eth_signTransaction(Json::Value const& _json)	
 {
@@ -313,7 +315,13 @@ Json::Value Eth::eth_inspectTransaction(std::string const& _rlp)
 }
 /**
  * marsCatXdu Modfied
- * 还没改呢，头大
+ * 还没改呢，头大（划掉）
+ * 					——2018.10.5
+ * 
+ * 我猜这东西现在用不着改了
+ * 下去看了一眼，主要是 jsToBytes() 的工作，而这个玩意基本上（就）是一个转换器，构造了一个八位无符号整数 vector
+ * 名其曰 bytes
+ * 					——2018.10.6
 */
 string Eth::eth_sendRawTransaction(std::string const& _rlp)
 {

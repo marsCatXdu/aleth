@@ -115,7 +115,12 @@ template <class T> vector<T> randomSelection(vector<T> const& _t, unsigned _n)
     }
     return ret;
 }
-
+/**
+ * marsCatXdu Marked
+ * 
+ * 应该是在这里传入接收到的各种包 RLP
+ * 
+*/
 bool Session::readPacket(uint16_t _capId, PacketType _packetType, RLP const& _r)
 {
     m_lastReceived = chrono::steady_clock::now();
@@ -125,7 +130,7 @@ bool Session::readPacket(uint16_t _capId, PacketType _packetType, RLP const& _r)
         // v4 frame headers are useless, offset packet type used
         // v5 protocol type is in header, packet type not offset
         if (_capId == 0 && _packetType < UserPacket)
-            return interpret(_packetType, _r);
+            return interpret(_packetType, _r);      // 应该就是 PeerCapability 的 interpret 了吧。
 
         for (auto const& i: m_capabilities)
             if (i.second->canHandle(_packetType))
@@ -142,9 +147,19 @@ bool Session::readPacket(uint16_t _capId, PacketType _packetType, RLP const& _r)
     }
     return true;
 }
-
+/**
+ * marsCatXdu Marked
+ * 
+ * woc到底是谁的 interpret 啊，到处都是同名的函数
+ * 然后 vs code 还弄不明白到底哪个是哪个的函数
+ * 
+ * 有没有什么特别牛逼的写 C++ 的玩意啊，VS 就算了吧，毕竟在 ubuntu 下面开发。。。。
+ * 装插件魔改过的 emacs 是不是好点啊，但是我看魔改好麻烦啊这工作量这么大哪有时间细学细研究那玩意啊
+ * 真是哔了狗了
+*/
 bool Session::interpret(PacketType _t, RLP const& _r)
 {
+    std::cout<<"执行 Session::interpret\n"; // 哎呀不行了干脆土办法解决吧懒得搞
     switch (_t)
     {
     case DisconnectPacket:
