@@ -94,7 +94,9 @@ public:
 	virtual bool eth_flush() override;
 	virtual Json::Value eth_getBlockByHash(std::string const& _blockHash, bool _includeTransactions) override;
 	virtual Json::Value eth_getBlockByNumber(std::string const& _blockNumber, bool _includeTransactions) override;
+//---------------------------------------------------<<< 应该可以跟着这个函数找到获取交易信息的地方吧，能查到带新字段的交易消息就成功了呗
 	virtual Json::Value eth_getTransactionByHash(std::string const& _transactionHash) override;
+//--------------------------------------------------->>>
 	virtual Json::Value eth_getTransactionByBlockHashAndIndex(std::string const& _blockHash, std::string const& _transactionIndex) override;
 	virtual Json::Value eth_getTransactionByBlockNumberAndIndex(std::string const& _blockNumber, std::string const& _transactionIndex) override;
 	virtual Json::Value eth_getTransactionReceipt(std::string const& _transactionHash) override;

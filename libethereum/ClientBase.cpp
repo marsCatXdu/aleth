@@ -320,7 +320,10 @@ Transaction ClientBase::transaction(h256 _transactionHash) const
 {
     return Transaction(bc().transaction(_transactionHash), CheckTransaction::Cheap);
 }
-
+/**
+ * marsCatXdu
+ * 按 hash 查交易
+*/
 LocalisedTransaction ClientBase::localisedTransaction(h256 const& _transactionHash) const
 {
     std::pair<h256, unsigned> tl = bc().transactionLocation(_transactionHash);
@@ -337,10 +340,16 @@ Transaction ClientBase::transaction(h256 _blockHash, unsigned _i) const
         return Transaction();
 }
 
+/**
+ * marsCatXdu Marked
+ * 两个参数是 transactionLocation 的两个【维度】，应该分别是块号和交易号（索引？）
+ */
 LocalisedTransaction ClientBase::localisedTransaction(h256 const& _blockHash, unsigned _i) const
 {
-    Transaction t = Transaction(bc().transaction(_blockHash, _i), CheckTransaction::Cheap);
-    return LocalisedTransaction(t, _blockHash, _i, numberFromHash(_blockHash));
+    Transaction t = Transaction(bc().transaction(_blockHash, _i), CheckTransaction::Cheap); // bc().transaction用块号交易号查到的是RLP，然后用RLP和CheckTransactin::cheap构造了个交易
+                                                                                            // 这个构造器已经改完了，回去的 Transaction 是一个结构良好能看懂的交易对象了
+    return LocalisedTransaction(t, _blockHash, _i, numberFromHash(_blockHash));             // 用上面那个构造良好的 Transaction 造一个这玩意返回去
+                                                                                            // 交易，块hash，交易号，还有一个什么什么东西
 }
 
 TransactionReceipt ClientBase::transactionReceipt(h256 const& _transactionHash) const

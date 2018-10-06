@@ -420,7 +420,7 @@ Json::Value Eth::eth_getTransactionByHash(string const& _transactionHash)
 		if (!client()->isKnownTransaction(h))
 			return Json::Value(Json::nullValue);
 
-		return toJson(client()->localisedTransaction(h));
+		return toJson(client()->localisedTransaction(h));	// 这参数是个包含了查询到的Transaction的信息的localisedTransaction对象
 	}
 	catch (...)
 	{

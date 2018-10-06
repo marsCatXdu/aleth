@@ -66,6 +66,10 @@ struct VMException;
 TransactionException toTransactionException(Exception const& _e);
 std::ostream& operator<<(std::ostream& _out, TransactionException const& _er);
 
+/**
+ * marsCatXdu Marked
+ * 这个玩意会被存下来吗？
+*/
 /// Description of the result of executing a transaction.
 struct ExecutionResult
 {
@@ -122,6 +126,10 @@ public:
 /// Nice name for vector of Transaction.
 using Transactions = std::vector<Transaction>;
 
+/**
+ * marsCatXdu Marked
+ * 从 web3 一路而来的 getTransactionByHash 最后叫了这个构造了个对象返了回去
+*/
 class LocalisedTransaction: public Transaction
 {
 public:
@@ -131,7 +139,7 @@ public:
 		unsigned _transactionIndex,
 		BlockNumber _blockNumber = 0
 	):
-		Transaction(_t),
+		Transaction(_t),		// 唉你这又构造了一个 Transaction
 		m_blockHash(_blockHash),
 		m_transactionIndex(_transactionIndex),
 		m_blockNumber(_blockNumber)

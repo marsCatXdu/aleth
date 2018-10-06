@@ -626,11 +626,15 @@ std::pair<ExecutionResult, TransactionReceipt> State::execute(EnvInfo const& _en
         TransactionReceipt(rootHash(), startGasUsed + e.gasUsed(), e.logs());
     return make_pair(res, receipt);
 }
-
+/**
+ * marsCatXdu Marked
+ * 
+ * 执行给定的块的交易，这个应该就是收块拆块验证里面的交易的了吧
+*/
 void State::executeBlockTransactions(Block const& _block, unsigned _txCount, LastBlockHashesFace const& _lastHashes, SealEngineFace const& _sealEngine)
 {
     u256 gasUsed = 0;
-    for (unsigned i = 0; i < _txCount; ++i)
+    for (unsigned i = 0; i < _txCount; ++i)     // 这个循环看着挺直观，应该就是这里验证块内交易了
     {
         EnvInfo envInfo(_block.info(), _lastHashes, gasUsed);
 
@@ -641,6 +645,12 @@ void State::executeBlockTransactions(Block const& _block, unsigned _txCount, Las
     }
 }
 
+/**
+ * marsCatXdu Marked
+ * 应该是这里没错了，
+ * 
+ * initialize，execute，finalize 三件套一条龙
+*/
 /// @returns true when normally halted; false when exceptionally halted; throws when internal VM
 /// exception occurred.
 bool State::executeTransaction(Executive& _e, Transaction const& _t, OnOpFunc const& _onOp)
@@ -737,6 +747,13 @@ std::ostream& dev::eth::operator<<(std::ostream& _out, State const& _s)
     return _out;
 }
 
+/**
+ * marsCatXdu Marked
+ * 原来以为都是从Executive构造器调的这个算的，但是构造器重载了参数对不上啊，这条路走断了
+ * 算了直接写吧。。。见啥改啥吧
+ * 
+ * 这个是对State应用tx
+*/
 State& dev::eth::createIntermediateState(State& o_s, Block const& _block, unsigned _txIndex, BlockChain const& _bc)
 {
     o_s = _block.state();

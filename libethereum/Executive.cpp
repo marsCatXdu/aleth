@@ -232,7 +232,8 @@ void Executive::initialize(Transaction const& _transaction)
     m_baseGasRequired = m_t.baseGasRequired(m_sealEngine.evmSchedule(m_envInfo.number()));
     try
     {
-        m_sealEngine.verifyTransaction(ImportRequirements::Everything, m_t, m_envInfo.header(), m_envInfo.gasUsed());
+        // 在 SealEngine。看起来只算了 gas
+        m_sealEngine.verifyTransaction(ImportRequirements::Everything, m_t, m_envInfo.header(), m_envInfo.gasUsed());   
     }
     catch (Exception const& ex)
     {
@@ -288,9 +289,9 @@ bool Executive::execute()
     m_s.subBalance(m_t.sender(), m_gasCost);
 
     assert(m_t.gas() >= (u256)m_baseGasRequired);
-    if (m_t.isCreation())
+    if (m_t.isCreation())       // 创建合约的交易
         return create(m_t.sender(), m_t.value(), m_t.gasPrice(), m_t.gas() - (u256)m_baseGasRequired, &m_t.data(), m_t.sender());
-    else
+    else                        // 调用合约的交易??
         return call(m_t.receiveAddress(), m_t.sender(), m_t.value(), m_t.gasPrice(), bytesConstRef(&m_t.data()), m_t.gas() - (u256)m_baseGasRequired);
 }
 

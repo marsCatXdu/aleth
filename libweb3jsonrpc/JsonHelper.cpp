@@ -243,6 +243,10 @@ Json::Value toJson(dev::eth::Transaction const& _t, bytes const& _rlp)
     return res;
 }
 
+/**
+ * marsCatXdu Marked
+ * 解析查询到的数据的 Json 解析器，应该别的能用到的解析器也就在这附近吧
+ */
 Json::Value toJson(dev::eth::LocalisedTransaction const& _t)
 {
     Json::Value res;
@@ -259,6 +263,7 @@ Json::Value toJson(dev::eth::LocalisedTransaction const& _t)
         res["blockHash"] = toJS(_t.blockHash());
         res["transactionIndex"] = toJS(_t.transactionIndex());
         res["blockNumber"] = toJS(_t.blockNumber());
+        res["extraMsg"] = toJS(_t.extraMsg()); /// XdAleth marsCatXdu 加上了，希望不会炸
     }
     return res;
 }

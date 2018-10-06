@@ -99,7 +99,10 @@ void SealEngineFace::populateFromParent(BlockHeader& _bi, BlockHeader const& _pa
 {
     _bi.populateFromParent(_parent);
 }
-
+/**
+ * marsCatXdu Marked
+ * 验证交易gas相关
+*/
 void SealEngineFace::verifyTransaction(ImportRequirements::value _ir, TransactionBase const& _t,
                                        BlockHeader const& _header, u256 const& _gasUsed) const
 {
